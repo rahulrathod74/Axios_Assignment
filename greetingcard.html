@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GreetingCard</title>
+    <style>
+        .card{
+            box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+            margin: 10px auto;
+            width: 50%;
+            text-align: center;
+            font-family: sans-serif;
+            padding: 20px;
+            border-radius: 20px;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    // Your  code will go here
+    function GreetingCard({ greeting, name ,color}) {
+      return (
+        <div className="card" style={{ backgroundColor: color }}>
+          <h2>{greeting} {name}</h2>
+          
+        </div>
+      );
+    }
+    function App() {
+      const greetingcards = [
+        { greeting: "Happy Birthday", name: "John Doe" , color:"red"},
+        { greeting: "Happy Birthday", name: "Rahul"  , color:"green"},
+        { greeting: "Happy Birthday", name: "Sundar" , color:"orange"},
+        { greeting: "Happy Birthday", name: "Venu" , color:"blue"},
+        { greeting: "Happy Birthday", name: "Ravi", color:"skyblue" },
+      ];
+
+      return (
+        <>
+          <div>
+            {greetingcards.map((card, index) => (
+                
+              <GreetingCard
+                key={index}
+                greeting={card.greeting}
+                name={card.name} color={card.color}/>
+             
+            ))}
+           
+          </div>
+        </>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</html>
