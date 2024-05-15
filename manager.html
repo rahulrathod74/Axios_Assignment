@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Template</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script type="text/babel">
+
+   // Define a functional component for adding a new task
+function AddTask({ onAddTask }) {
+    const [title, setTitle] = React.useState('');
+    const [assignee, setAssignee] = React.useState('');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const newTask = {
+            title,
+            isCompleted: false,
+            assignee
+        };
+        axios.post('http://localhost:3000/todos', newTask)
+            .then(response => {
+                onAddTask(response.data);
+                setTitle('');
+                setAssignee('');
+            })
+            .catch(error => console.error('Error adding task:', error));
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Task Title" required />
+            <input type="text" value={assignee} onChange={e => setAssignee(e.target.value)} placeholder="Assignee" required />
+            <button type="submit">Add Task</button>
+        </form>
+    );
+}
+
+// Define a functional component for displaying tasks
+function TaskList({ tasks, onDeleteTask }) {
+    const handleDelete = (id) => {
+        axios.delete(`http://localhost:3000/todos/${id}`)
+            .then(response => {
+                onDeleteTask(id);
+            })
+            .catch(error => console.error('Error deleting task:', error));
+    };
+
+    return (
+        <ul>
+            {tasks.map(task => (
+                <li key={task.id}>
+                    {task.title} - {task.assignee}
+                    <button onClick={() => handleDelete(task.id)}>Delete</button>
+                </li>
+            ))}
+        </ul>
+    );
+}
+
+// Define the main App component
+function App() {
+    const [tasks, setTasks] = React.useState([]);
+
+    // Fetch all tasks from the server
+    React.useEffect(() => {
+        axios.get('http://localhost:3000/todos')
+            .then(response => {
+                setTasks(response.data);
+            })
+            .catch(error => console.error('Error fetching tasks:', error));
+    }, []);
+
+    // Function to add a new task
+    const handleAddTask = (newTask) => {
+        setTasks([...tasks, newTask]);
+    };
+
+    // Function to delete a task
+    const handleDeleteTask = (taskId) => {
+        setTasks(tasks.filter(task => task.id !== taskId));
+    };
+
+    return (
+        <div>
+            <h1>Advanced Task Manager</h1>
+            <AddTask onAddTask={handleAddTask} />
+            <TaskList tasks={tasks} onDeleteTask={handleDeleteTask} />
+        </div>
+    );
+}
+
+// Render the App component
+ReactDOM.render(<App />, document.getElementById('root'));
+
+  </script>
+</html>
